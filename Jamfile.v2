@@ -14,8 +14,6 @@ project googletest
     
 #Source files.
 SOURCES =
-    ./googletest/src
-    ./googlemock/src
     ./googletest/src/gtest-all.cc
     ./googlemock/src/gmock-all.cc
     ;
