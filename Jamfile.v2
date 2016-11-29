@@ -1,6 +1,8 @@
 project googletest
-    :
-    requirements
+    : source-location
+      ./googletest/src
+      ./googlemock/src
+    : requirements
        <toolset>msvc:<define>_SCL_SECURE_NO_DEPRECATE
        <toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
        <toolset>gcc:<cxxflags>-ftemplate-depth-1024
@@ -12,6 +14,8 @@ project googletest
     
 #Source files.
 SOURCES =
+    ./googletest/src
+    ./googlemock/src
     ./googletest/src/gtest-all.cc
     ./googlemock/src/gmock-all.cc
     ;
