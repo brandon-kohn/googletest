@@ -46,4 +46,6 @@ lib gtest
     : # Usage requirements
       <include>./googletest/include/gtest
       <include>./googlemock/include/gmock
+      <include>./googletest/include
+      <include>./googlemock/include
 ;
