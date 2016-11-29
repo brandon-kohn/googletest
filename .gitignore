@@ -1,2 +1,5 @@
 # Ignore CI build directory
 build/
+/bin/msvc-14.0/debug/link-static/threading-multi/googlemock/src/*.rsp
+/bin/msvc-14.0/debug/link-static/threading-multi/googletest/src/*.rsp
+/bin/msvc-14.0/debug/link-static/threading-multi/*.rsp
