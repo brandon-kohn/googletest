@@ -1,0 +1,25 @@
+project googletest
+    :
+    requirements
+       <include>./googletest/googletest/include/gtest
+       <include>./googletest/googlemock/include/gmock
+       <toolset>msvc:<define>_SCL_SECURE_NO_DEPRECATE
+       <toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
+       <toolset>gcc:<cxxflags>-ftemplate-depth-1024
+       <toolset>clang:<cxxflags>-ftemplate-depth-1024
+       <toolset>gcc:<cxxflags>-std=c++11
+       <toolset>clang:<cxxflags>-std=c++11
+       <link>static
+    ;
+    
+#Source files.
+SOURCES =
+    ./googletest/googletest/src/gtest-all.cc
+    ./googletest/googlemock/src/gmock-all.cc
+    ;
+
+# Rule for gmock static libraries.
+lib gtest
+    : # Source files and dependencies 
+      $(SOURCES)
+;
