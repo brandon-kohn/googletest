@@ -8,10 +8,6 @@ project googletest
        <toolset>gcc:<cxxflags>-std=c++11
        <toolset>clang:<cxxflags>-std=c++11
        <link>static
-       :
-       :
-       <include>./googletest/include/gtest
-       <include>./googlemock/include/gmock
     ;
     
 #Source files.
@@ -24,4 +20,9 @@ SOURCES =
 lib gtest
     : # Source files and dependencies 
       $(SOURCES)
+    :
+    :
+    :
+    : <include>./googletest/include/gtest
+      <include>./googlemock/include/gmock
 ;
