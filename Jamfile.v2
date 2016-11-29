@@ -4,6 +4,8 @@ project googletest
         ./googletest
         ./googlemock
     : requirements
+        <include>./googletest
+        <include>./googlemock
         <include>./googletest/include
         <include>./googlemock/include
         <define>_UNICODE
