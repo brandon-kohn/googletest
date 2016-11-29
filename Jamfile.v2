@@ -20,9 +20,9 @@ SOURCES =
 lib gtest
     : # Source files and dependencies 
       $(SOURCES)
-    :
-    :
-    :
-    : <include>./googletest/include/gtest
+    : # Requirements
+    : # Default Build
+    : # Usage requirements
+      <include>./googletest/include/gtest
       <include>./googlemock/include/gmock
 ;
