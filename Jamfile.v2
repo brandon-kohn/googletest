@@ -4,8 +4,8 @@ project googletest
         ./googletest
         ./googlemock
     : requirements
-        <include>./googletest/src
-        <include>./googlemock/src
+        <include>./googletest
+        <include>./googlemock
         <toolset>msvc:<define>_SCL_SECURE_NO_DEPRECATE
         <toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
         <toolset>gcc:<cxxflags>-ftemplate-depth-1024
