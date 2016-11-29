@@ -1,5 +1,6 @@
 project googletest
     : source-location
+      .
     : requirements
        <toolset>msvc:<define>_SCL_SECURE_NO_DEPRECATE
        <toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
