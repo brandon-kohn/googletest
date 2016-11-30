@@ -28,6 +28,7 @@ project googletest
         <toolset>clang:<cxxflags>-ftemplate-depth-1024
         <toolset>gcc:<cxxflags>-std=c++11
         <toolset>clang:<cxxflags>-std=c++11
+        <threading>multi
         <link>static
     ;
     
