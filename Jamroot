@@ -1,0 +1,52 @@
+# Jamfile.v2
+#
+# Copyright (c) 2016
+# Brandon Kohn
+#
+# Distributed under the Boost Software License, Version 1.0. (See
+# accompanying file LICENSE_1_0.txt or copy at
+# http://www.boost.org/LICENSE_1_0.txt)
+
+project googletest
+    :   source-location
+        .
+        ./googletest
+        ./googlemock
+    : requirements
+        <include>./googletest
+        <include>./googlemock
+        <include>./googletest/include
+        <include>./googlemock/include
+        <define>_UNICODE
+        <define>UNICODE
+        <define>STRICT
+        <define>GTEST_HAS_EXCEPTIONS=1
+        <define>GTEST_LANG_CXX11=1
+        <toolset>msvc:<define>_SCL_SECURE_NO_DEPRECATE
+        <toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
+        <toolset>gcc:<cxxflags>-ftemplate-depth-1024
+        <toolset>clang:<cxxflags>-ftemplate-depth-1024
+        <toolset>gcc:<cxxflags>-std=c++11
+        <toolset>clang:<cxxflags>-std=c++11
+        <threading>multi
+        <link>static
+    ;
+    
+#Source files.
+SOURCES =
+    googletest/src/gtest-all.cc
+    googlemock/src/gmock-all.cc
+    ;
+
+# Rule for gmock static libraries.
+lib gtest
+    : # Source files and dependencies 
+      $(SOURCES)
+    : # Requirements
+    : # Default Build
+    : # Usage requirements
+      <include>./googletest/include/gtest
+      <include>./googlemock/include/gmock
+      <include>./googletest/include
+      <include>./googlemock/include
+;
