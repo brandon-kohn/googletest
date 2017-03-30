@@ -72,10 +72,10 @@ config_compiler_and_linker()  # from ${gtest_dir}/cmake/internal_utils.cmake
 # Adds Google Mock's and Google Test's header directories to the search path.
 set(gmock_build_include_dirs
   "${gmock_SOURCE_DIR}/include"
-  "${gmock_SOURCE_DIR}"
-  "${gtest_SOURCE_DIR}/include"
+                    "${gmock_SOURCE_DIR}"
+                    "${gtest_SOURCE_DIR}/include"
   # This directory is needed to build directly from Google Test sources.
-  "${gtest_SOURCE_DIR}")
+                    "${gtest_SOURCE_DIR}")
 include_directories(${gmock_build_include_dirs})
 
 ########################################################################
@@ -88,21 +88,25 @@ include_directories(${gmock_build_include_dirs})
 # a user aggressive about warnings.
 if (MSVC)
   cxx_library(gmock
-              "${cxx_strict}"
-              "${gtest_dir}/src/gtest-all.cc"
-              src/gmock-all.cc)
+            "${cxx_strict}"
+            "${gtest_dir}/src/gtest-all.cc"
+            src/gmock-all.cc)
 
   cxx_library(gmock_main
-              "${cxx_strict}"
-              "${gtest_dir}/src/gtest-all.cc"
-              src/gmock-all.cc
-              src/gmock_main.cc)
+            "${cxx_strict}"
+            "${gtest_dir}/src/gtest-all.cc"
+            src/gmock-all.cc
+            src/gmock_main.cc)
 else()
   cxx_library(gmock "${cxx_strict}" src/gmock-all.cc)
   target_link_libraries(gmock PUBLIC gtest)
   cxx_library(gmock_main "${cxx_strict}" src/gmock_main.cc)
   target_link_libraries(gmock_main PUBLIC gmock)
 endif()
+
+set_target_properties (gmock PROPERTIES DEBUG_POSTFIX "d")
+set_target_properties (gmock_main PROPERTIES DEBUG_POSTFIX "d")
+
 # If the CMake version supports it, attach header directory information
 # to the targets for when we are part of a parent build (ie being pulled
 # in via add_subdirectory() rather than being a standalone build).
@@ -188,11 +192,11 @@ $env:Path = \"$project_bin;$env:Path\"
   # C++ tests built with non-standard compiler flags.
 
   if (MSVC)
-    cxx_library(gmock_main_no_exception "${cxx_no_exception}"
-      "${gtest_dir}/src/gtest-all.cc" src/gmock-all.cc src/gmock_main.cc)
+  cxx_library(gmock_main_no_exception "${cxx_no_exception}"
+    "${gtest_dir}/src/gtest-all.cc" src/gmock-all.cc src/gmock_main.cc)
 
-    cxx_library(gmock_main_no_rtti "${cxx_no_rtti}"
-      "${gtest_dir}/src/gtest-all.cc" src/gmock-all.cc src/gmock_main.cc)
+  cxx_library(gmock_main_no_rtti "${cxx_no_rtti}"
+    "${gtest_dir}/src/gtest-all.cc" src/gmock-all.cc src/gmock_main.cc)
 
   else()
     cxx_library(gmock_main_no_exception "${cxx_no_exception}" src/gmock_main.cc)

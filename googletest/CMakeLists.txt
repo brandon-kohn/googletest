@@ -127,6 +127,11 @@ include_directories(${gtest_build_include_dirs})
 # aggressive about warnings.
 cxx_library(gtest "${cxx_strict}" src/gtest-all.cc)
 cxx_library(gtest_main "${cxx_strict}" src/gtest_main.cc)
+target_link_libraries(gtest_main gtest)
+
+set_target_properties (gtest PROPERTIES DEBUG_POSTFIX "d")
+set_target_properties (gtest_main PROPERTIES DEBUG_POSTFIX "d")
+
 # If the CMake version supports it, attach header directory information
 # to the targets for when we are part of a parent build (ie being pulled
 # in via add_subdirectory() rather than being a standalone build).
