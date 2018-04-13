@@ -748,7 +748,6 @@ TEST(ExpectCallSyntaxTest, WarningIsErrorWithFlag) {
   testing::GMOCK_FLAG(default_mock_behavior) = original_behavior;
 }
 
-
 #endif  // GTEST_HAS_STREAM_REDIRECTION
 
 // Tests the semantics of ON_CALL().
@@ -2174,7 +2173,9 @@ class GMockVerboseFlagTest : public VerboseFlagPreservingFixture {
         "NOTE: You can safely ignore the above warning unless this "
         "call should not happen.  Do not suppress it by blindly adding "
         "an EXPECT_CALL() if you don't mean to enforce the call.  "
-        "See https://github.com/google/googletest/blob/master/googlemock/docs/CookBook.md#"
+        "See "
+        "https://github.com/google/googletest/blob/master/googlemock/docs/"
+        "CookBook.md#"
         "knowing-when-to-expect for details.";
 
     // A void-returning function.
@@ -2691,7 +2692,6 @@ int gmock_main(int argc, char **argv) {
 int main(int argc, char **argv) {
 #endif  // GMOCK_RENAME_MAIN
   testing::InitGoogleMock(&argc, argv);
-
   // Ensures that the tests pass no matter what value of
   // --gmock_catch_leaked_mocks and --gmock_verbose the user specifies.
   testing::GMOCK_FLAG(catch_leaked_mocks) = true;
