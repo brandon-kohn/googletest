@@ -211,7 +211,61 @@ std::string StreamableToString(const T& streamable) {
   return (Message() << streamable).GetString();
 }
 
+enum GTestColor {
+    COLOR_DEFAULT,
+    COLOR_RED,
+    COLOR_GREEN,
+    COLOR_YELLOW
+};
+
+GTEST_API_ void ColoredPrintf(GTestColor color, const char* fmt, ...);
 }  // namespace internal
+
+namespace OutputColors {
+	enum Color {
+		COLOR_DEFAULT,
+		COLOR_RED,
+		COLOR_GREEN,
+		COLOR_YELLOW
+	};
+}
+
+struct GTEST_API_ CustomMessageStream : std::stringstream
+{
+    CustomMessageStream() 
+		: mColor(OutputColors::COLOR_YELLOW)
+	{}
+
+	CustomMessageStream(OutputColors::Color messageColor)
+		: mColor(messageColor)
+	{}
+
+    CustomMessageStream(const std::string& s)
+		: mColor(OutputColors::COLOR_YELLOW)
+	{
+		(*this) << s;
+	}
+
+    CustomMessageStream(const std::string& s, OutputColors::Color messageColor)
+		: mColor(messageColor)
+	{
+		(*this) << s;
+	}
+
+    ~CustomMessageStream()
+    {
+		if (this->str().empty() || this->str().back() != '\n')
+			(*this) << '\n';
+
+        ::testing::internal::ColoredPrintf(testing::internal::COLOR_GREEN, "[   NOTE   ] "); 
+        ::testing::internal::ColoredPrintf(static_cast<::testing::internal::GTestColor>(mColor), this->str().c_str());
+    }
+
+	OutputColors::Color mColor;
+};
+
+#define GTEST_MESSAGE(...) ::testing::CustomMessageStream(__VA_ARGS__)
+
 }  // namespace testing
 
 GTEST_DISABLE_MSC_WARNINGS_POP_()  //  4251

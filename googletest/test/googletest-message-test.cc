@@ -155,4 +155,11 @@ TEST(MessageTest, DoesNotTakeUpMuchStackSpace) {
   EXPECT_LE(sizeof(Message), 16U);
 }
 
+TEST(CustomMessageStreamTest, CompileTest)
+{
+	GTEST_MESSAGE("This should message out.");
+	GTEST_MESSAGE("This should message out: ") << "along with this.";
+	GTEST_MESSAGE();
+}
+
 }  // namespace
