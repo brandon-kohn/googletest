@@ -258,7 +258,7 @@ struct GTEST_API_ CustomMessageStream : std::stringstream
 			(*this) << '\n';
 
         ::testing::internal::ColoredPrintf(testing::internal::COLOR_GREEN, "[   NOTE   ] "); 
-        ::testing::internal::ColoredPrintf(static_cast<::testing::internal::GTestColor>(mColor), this->str().c_str());
+        ::testing::internal::ColoredPrintf((::testing::internal::GTestColor)mColor, this->str().c_str());
     }
 
 	OutputColors::Color mColor;
