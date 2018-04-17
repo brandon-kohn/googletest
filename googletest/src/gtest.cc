@@ -239,9 +239,9 @@ GTEST_DEFINE_bool_(
     "break-point.");
 
 GTEST_DEFINE_bool_(catch_exceptions,
-                   internal::BoolFromGTestEnv("catch_exceptions", true),
+    internal::BoolFromGTestEnv("catch_exceptions", true),
                    "True if and only if " GTEST_NAME_
-                   " should catch exceptions and treat them as test failures.");
+    " should catch exceptions and treat them as test failures.");
 
 GTEST_DEFINE_string_(
     color,
@@ -290,11 +290,11 @@ GTEST_DEFINE_string_(
 
 GTEST_DEFINE_bool_(print_time, internal::BoolFromGTestEnv("print_time", true),
                    "True if and only if " GTEST_NAME_
-                   " should display elapsed time in text output.");
+    " should display elapsed time in text output.");
 
 GTEST_DEFINE_bool_(print_utf8, internal::BoolFromGTestEnv("print_utf8", true),
                    "True if and only if " GTEST_NAME_
-                   " prints UTF8 characters as text.");
+    " prints UTF8 characters as text.");
 
 GTEST_DEFINE_int32_(
     random_seed,
@@ -311,11 +311,11 @@ GTEST_DEFINE_int32_(
 GTEST_DEFINE_bool_(show_internal_stack_frames, false,
                    "True if and only if " GTEST_NAME_
                    " should include internal stack frames when "
-                   "printing test failure stack traces.");
+    "printing test failure stack traces.");
 
 GTEST_DEFINE_bool_(shuffle, internal::BoolFromGTestEnv("shuffle", false),
                    "True if and only if " GTEST_NAME_
-                   " should randomize tests' order on every run.");
+    " should randomize tests' order on every run.");
 
 GTEST_DEFINE_int32_(
     stack_trace_depth,
@@ -1859,11 +1859,11 @@ AssertionResult HRESULTFailureHelper(const char* expr,
   // Gets the system's human readable message string for this HRESULT.
   char error_text[kBufSize] = { '\0' };
   DWORD message_length = ::FormatMessageA(kFlags,
-                                          0,   // no source, we're asking system
+                                          0,  // no source, we're asking system
                                           static_cast<DWORD>(hr),  // the error
-                                          0,   // no line width restrictions
+                                          0,  // no line width restrictions
                                           error_text,  // output buffer
-                                          kBufSize,    // buf size
+                                          kBufSize,  // buf size
                                           nullptr);  // no arguments for inserts
   // Trims tailing white space (FormatMessage leaves a trailing CR-LF)
   for (; message_length && IsSpace(error_text[message_length - 1]);
@@ -1978,15 +1978,15 @@ inline bool IsUtf16SurrogatePair(wchar_t first, wchar_t second) {
 
 // Creates a Unicode code point from UTF16 surrogate pair.
 inline uint32_t CreateCodePointFromUtf16SurrogatePair(wchar_t first,
-                                                      wchar_t second) {
+                                                    wchar_t second) {
   const auto first_u = static_cast<uint32_t>(first);
   const auto second_u = static_cast<uint32_t>(second);
   const uint32_t mask = (1 << 10) - 1;
   return (sizeof(wchar_t) == 2)
              ? (((first_u & mask) << 10) | (second_u & mask)) + 0x10000
              :
-             // This function should not be called when the condition is
-             // false, but we provide a sensible default in case it is.
+      // This function should not be called when the condition is
+      // false, but we provide a sensible default in case it is.
              first_u;
 }
 
@@ -2460,9 +2460,9 @@ void ReportFailureInUnknownLocation(TestPartResult::Type result_type,
   UnitTest::GetInstance()->AddTestPartResult(
       result_type,
       nullptr,  // No info about the source file where the exception occurred.
-      -1,       // We have no info on which line caused the exception.
+      -1,    // We have no info on which line caused the exception.
       message,
-      "");  // No stack trace, either.
+      "");   // No stack trace, either.
 }
 
 }  // namespace internal
@@ -2766,7 +2766,7 @@ TestInfo* MakeAndRegisterTestInfo(
 }
 
 void ReportInvalidTestSuiteType(const char* test_suite_name,
-                                CodeLocation code_location) {
+                               CodeLocation code_location) {
   Message errors;
   errors
       << "Attempted redefinition of test suite " << test_suite_name << ".\n"
@@ -2861,10 +2861,10 @@ void TestInfo::Run() {
   }
 
   if (test != nullptr) {
-    // Deletes the test object.
-    impl->os_stack_trace_getter()->UponLeavingGTest();
-    internal::HandleExceptionsInMethodIfSupported(
-        test, &Test::DeleteSelf_, "the test fixture's destructor");
+  // Deletes the test object.
+  impl->os_stack_trace_getter()->UponLeavingGTest();
+  internal::HandleExceptionsInMethodIfSupported(
+      test, &Test::DeleteSelf_, "the test fixture's destructor");
   }
 
   result_.set_start_timestamp(start);
@@ -3012,14 +3012,8 @@ void TestSuite::Run() {
   start_timestamp_ = internal::GetTimeInMillis();
   for (int i = 0; i < total_test_count(); i++) {
     GetMutableTestInfo(i)->Run();
-    if (GTEST_FLAG(fail_fast) && GetMutableTestInfo(i)->result()->Failed()) {
-      for (int j = i + 1; j < total_test_count(); j++) {
-        GetMutableTestInfo(j)->Skip();
-      }
-      break;
-    }
   }
-  elapsed_time_ = internal::GetTimeInMillis() - start_timestamp_;
+  elapsed_time_ = internal::GetTimeInMillis() - start;
 
   impl->os_stack_trace_getter()->UponLeavingGTest();
   internal::HandleExceptionsInMethodIfSupported(
@@ -3464,14 +3458,14 @@ void PrettyUnitTestResultPrinter::OnTestStart(const TestInfo& test_info) {
 void PrettyUnitTestResultPrinter::OnTestPartResult(
     const TestPartResult& result) {
   switch (result.type()) {
-    // If the test part succeeded, we don't need to do anything.
+  // If the test part succeeded, we don't need to do anything.
     case TestPartResult::kSuccess:
-      return;
+    return;
     default:
       // Print failure message from the assertion
       // (e.g. expected this and got that).
-      PrintTestPartResult(result);
-      fflush(stdout);
+  PrintTestPartResult(result);
+  fflush(stdout);
   }
 }
 
@@ -3717,13 +3711,13 @@ void TestEventRepeater::Name(const Type& parameter) { \
 }
 // This defines a member that forwards the call to all listeners in reverse
 // order.
-#define GTEST_REVERSE_REPEATER_METHOD_(Name, Type)      \
+#define GTEST_REVERSE_REPEATER_METHOD_(Name, Type) \
   void TestEventRepeater::Name(const Type& parameter) { \
-    if (forwarding_enabled_) {                          \
+  if (forwarding_enabled_) { \
       for (size_t i = listeners_.size(); i != 0; i--) { \
         listeners_[i - 1]->Name(parameter);             \
-      }                                                 \
-    }                                                   \
+    } \
+  } \
   }
 
 GTEST_REPEATER_METHOD_(OnTestProgramStart, UnitTest)
@@ -4119,13 +4113,13 @@ void XmlUnitTestResultPrinter::PrintXmlTestSuite(std::ostream* stream,
   OutputXmlAttribute(stream, kTestsuite, "tests",
                      StreamableToString(test_suite.reportable_test_count()));
   if (!GTEST_FLAG(list_tests)) {
-    OutputXmlAttribute(stream, kTestsuite, "failures",
+  OutputXmlAttribute(stream, kTestsuite, "failures",
                        StreamableToString(test_suite.failed_test_count()));
-    OutputXmlAttribute(
-        stream, kTestsuite, "disabled",
+  OutputXmlAttribute(
+      stream, kTestsuite, "disabled",
         StreamableToString(test_suite.reportable_disabled_test_count()));
-    OutputXmlAttribute(stream, kTestsuite, "errors", "0");
-    OutputXmlAttribute(stream, kTestsuite, "time",
+  OutputXmlAttribute(stream, kTestsuite, "errors", "0");
+  OutputXmlAttribute(stream, kTestsuite, "time",
                        FormatTimeInMillisAsSeconds(test_suite.elapsed_time()));
     OutputXmlAttribute(
         stream, kTestsuite, "timestamp",
@@ -4494,18 +4488,18 @@ void JsonUnitTestResultPrinter::PrintJsonTestSuite(
   if (!GTEST_FLAG(list_tests)) {
     OutputJsonKey(stream, kTestsuite, "failures",
                   test_suite.failed_test_count(), kIndent);
-    OutputJsonKey(stream, kTestsuite, "disabled",
+  OutputJsonKey(stream, kTestsuite, "disabled",
                   test_suite.reportable_disabled_test_count(), kIndent);
-    OutputJsonKey(stream, kTestsuite, "errors", 0, kIndent);
+  OutputJsonKey(stream, kTestsuite, "errors", 0, kIndent);
     OutputJsonKey(
         stream, kTestsuite, "timestamp",
         FormatEpochTimeInMillisAsRFC3339(test_suite.start_timestamp()),
         kIndent);
-    OutputJsonKey(stream, kTestsuite, "time",
+  OutputJsonKey(stream, kTestsuite, "time",
                   FormatTimeInMillisAsDuration(test_suite.elapsed_time()),
                   kIndent, false);
     *stream << TestPropertiesAsJson(test_suite.ad_hoc_test_result(), kIndent)
-            << ",\n";
+          << ",\n";
   }
 
   *stream << kIndent << "\"" << kTestsuite << "\": [\n";
@@ -4860,6 +4854,8 @@ void TestEventListeners::SuppressEventForwarding() {
 
 // class UnitTest
 
+UnitTest::Container UnitTest::singletonContainer_;
+
 // Gets the singleton UnitTest object.  The first time this method is
 // called, a UnitTest object is constructed and returned.  Consecutive
 // calls will return the same object.
@@ -4868,17 +4864,16 @@ void TestEventListeners::SuppressEventForwarding() {
 // call this before main() starts, from which point on the return
 // value will never change.
 UnitTest* UnitTest::GetInstance() {
-  // CodeGear C++Builder insists on a public destructor for the
-  // default implementation.  Use this implementation to keep good OO
-  // design with private destructor.
+  if (singletonContainer_.Get() == NULL) {
+    singletonContainer_.Set(new UnitTest);
+  }
+  return singletonContainer_.Get();
+}
 
-#if defined(__BORLANDC__)
-  static UnitTest* const instance = new UnitTest;
-  return instance;
-#else
-  static UnitTest instance;
-  return &instance;
-#endif  // defined(__BORLANDC__)
+void UnitTest::DeinitializeInstance() {
+  if (singletonContainer_.Get()) {
+    singletonContainer_.Clear();
+  }
 }
 
 // Gets the number of successful test suites.
@@ -4913,6 +4908,8 @@ int UnitTest::failed_test_case_count() const {
 int UnitTest::total_test_case_count() const {
   return impl()->total_test_suite_count();
 }
+
+
 int UnitTest::test_case_to_run_count() const {
   return impl()->test_suite_to_run_count();
 }
@@ -5254,12 +5251,39 @@ void UnitTest::PopGTestTrace()
   impl_->gtest_trace_stack().pop_back();
 }
 
+
+// UnitTest::Container
+UnitTest::Container::Container() {
+  t_ = NULL;
+}
+
+UnitTest::Container::~Container() {
+  Clear();
+}
+
+void UnitTest::Container::Set(UnitTest *t) {
+  t_ = t;
+}
+
+UnitTest* UnitTest::Container::Get() {
+  return t_;
+}
+
+void UnitTest::Container::Clear() {
+  if (t_) {
+    delete t_;
+    t_ = NULL;
+  }
+}
+
+
+
 namespace internal {
 
 UnitTestImpl::UnitTestImpl(UnitTest* parent)
     : parent_(parent),
       GTEST_DISABLE_MSC_WARNINGS_PUSH_(4355 /* using this in initializer */)
-          default_global_test_part_result_reporter_(this),
+      default_global_test_part_result_reporter_(this),
       default_per_thread_test_part_result_reporter_(this),
       GTEST_DISABLE_MSC_WARNINGS_POP_() global_test_part_result_repoter_(
           &default_global_test_part_result_reporter_),
@@ -5274,7 +5298,7 @@ UnitTestImpl::UnitTestImpl(UnitTest* parent)
       os_stack_trace_getter_(nullptr),
       post_flag_parse_init_performed_(false),
       random_seed_(0),  // Will be overridden by the flag before first use.
-      random_(0),       // Will be reseeded before first use.
+      random_(0),  // Will be reseeded before first use.
       start_timestamp_(0),
       elapsed_time_(0),
 #if GTEST_HAS_DEATH_TEST
@@ -6207,30 +6231,30 @@ static const char kColorEncodedHelpMessage[] =
 static bool ParseGoogleTestFlag(const char* const arg) {
   return ParseBoolFlag(arg, kAlsoRunDisabledTestsFlag,
                        &GTEST_FLAG(also_run_disabled_tests)) ||
-         ParseBoolFlag(arg, kBreakOnFailureFlag,
-                       &GTEST_FLAG(break_on_failure)) ||
-         ParseBoolFlag(arg, kCatchExceptionsFlag,
-                       &GTEST_FLAG(catch_exceptions)) ||
-         ParseStringFlag(arg, kColorFlag, &GTEST_FLAG(color)) ||
-         ParseStringFlag(arg, kDeathTestStyleFlag,
-                         &GTEST_FLAG(death_test_style)) ||
-         ParseBoolFlag(arg, kDeathTestUseFork,
-                       &GTEST_FLAG(death_test_use_fork)) ||
+      ParseBoolFlag(arg, kBreakOnFailureFlag,
+                    &GTEST_FLAG(break_on_failure)) ||
+      ParseBoolFlag(arg, kCatchExceptionsFlag,
+                    &GTEST_FLAG(catch_exceptions)) ||
+      ParseStringFlag(arg, kColorFlag, &GTEST_FLAG(color)) ||
+      ParseStringFlag(arg, kDeathTestStyleFlag,
+                      &GTEST_FLAG(death_test_style)) ||
+      ParseBoolFlag(arg, kDeathTestUseFork,
+                    &GTEST_FLAG(death_test_use_fork)) ||
          ParseBoolFlag(arg, kFailFast, &GTEST_FLAG(fail_fast)) ||
-         ParseStringFlag(arg, kFilterFlag, &GTEST_FLAG(filter)) ||
-         ParseStringFlag(arg, kInternalRunDeathTestFlag,
-                         &GTEST_FLAG(internal_run_death_test)) ||
-         ParseBoolFlag(arg, kListTestsFlag, &GTEST_FLAG(list_tests)) ||
-         ParseStringFlag(arg, kOutputFlag, &GTEST_FLAG(output)) ||
-         ParseBoolFlag(arg, kPrintTimeFlag, &GTEST_FLAG(print_time)) ||
-         ParseBoolFlag(arg, kPrintUTF8Flag, &GTEST_FLAG(print_utf8)) ||
-         ParseInt32Flag(arg, kRandomSeedFlag, &GTEST_FLAG(random_seed)) ||
-         ParseInt32Flag(arg, kRepeatFlag, &GTEST_FLAG(repeat)) ||
-         ParseBoolFlag(arg, kShuffleFlag, &GTEST_FLAG(shuffle)) ||
-         ParseInt32Flag(arg, kStackTraceDepthFlag,
-                        &GTEST_FLAG(stack_trace_depth)) ||
-         ParseStringFlag(arg, kStreamResultToFlag,
-                         &GTEST_FLAG(stream_result_to)) ||
+      ParseStringFlag(arg, kFilterFlag, &GTEST_FLAG(filter)) ||
+      ParseStringFlag(arg, kInternalRunDeathTestFlag,
+                      &GTEST_FLAG(internal_run_death_test)) ||
+      ParseBoolFlag(arg, kListTestsFlag, &GTEST_FLAG(list_tests)) ||
+      ParseStringFlag(arg, kOutputFlag, &GTEST_FLAG(output)) ||
+      ParseBoolFlag(arg, kPrintTimeFlag, &GTEST_FLAG(print_time)) ||
+      ParseBoolFlag(arg, kPrintUTF8Flag, &GTEST_FLAG(print_utf8)) ||
+      ParseInt32Flag(arg, kRandomSeedFlag, &GTEST_FLAG(random_seed)) ||
+      ParseInt32Flag(arg, kRepeatFlag, &GTEST_FLAG(repeat)) ||
+      ParseBoolFlag(arg, kShuffleFlag, &GTEST_FLAG(shuffle)) ||
+      ParseInt32Flag(arg, kStackTraceDepthFlag,
+                     &GTEST_FLAG(stack_trace_depth)) ||
+      ParseStringFlag(arg, kStreamResultToFlag,
+                      &GTEST_FLAG(stream_result_to)) ||
          ParseBoolFlag(arg, kThrowOnFailureFlag, &GTEST_FLAG(throw_on_failure));
 }
 
@@ -6382,6 +6406,11 @@ void InitGoogleTest(int* argc, wchar_t** argv) {
 #endif  // defined(GTEST_CUSTOM_INIT_GOOGLE_TEST_FUNCTION_)
 }
 
+void UnloadGoogleTest()
+{
+    testing::UnitTest::DeinitializeInstance();
+}
+
 // This overloaded version can be used on Arduino/embedded platforms where
 // there is no argc/argv.
 void InitGoogleTest() {
@@ -6397,7 +6426,6 @@ void InitGoogleTest() {
   internal::InitGoogleTestImpl(&argc, argv);
 #endif  // defined(GTEST_CUSTOM_INIT_GOOGLE_TEST_FUNCTION_)
 }
-
 std::string TempDir() {
 #if defined(GTEST_CUSTOM_TEMPDIR_FUNCTION_)
   return GTEST_CUSTOM_TEMPDIR_FUNCTION_();

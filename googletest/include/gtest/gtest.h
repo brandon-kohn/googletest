@@ -816,12 +816,12 @@ class GTEST_API_ TestInfo {
   // value-parameterized test.
   const std::unique_ptr<const ::std::string> value_param_;
   internal::CodeLocation location_;
-  const internal::TypeId fixture_class_id_;  // ID of the test fixture class
+  const internal::TypeId fixture_class_id_;   // ID of the test fixture class
   bool should_run_;           // True if and only if this test should run
   bool is_disabled_;          // True if and only if this test is disabled
-  bool matches_filter_;       // True if this test matches the
-                              // user-specified filter.
-  bool is_in_another_shard_;  // Will be run in another shard.
+  bool matches_filter_;             // True if this test matches the
+                                    // user-specified filter.
+  bool is_in_another_shard_;        // Will be run in another shard.
   internal::TestFactoryBase* const factory_;  // The factory that creates
                                               // the test object
 
@@ -1260,8 +1260,7 @@ class GTEST_API_ TestEventListeners {
 // A UnitTest consists of a vector of TestSuites.
 //
 // This is a singleton class.  The only instance of UnitTest is
-// created when UnitTest::GetInstance() is first called.  This
-// instance is never deleted.
+// created on the first call to GetInstance().
 //
 // UnitTest is not copyable.
 //
@@ -1273,6 +1272,12 @@ class GTEST_API_ UnitTest {
   // is called, a UnitTest object is constructed and returned.
   // Consecutive calls will return the same object.
   static UnitTest* GetInstance();
+
+  // Delete the static UnitTest singleton instance. This effectively
+  // cleans up Google Test, and all loaded test cases are unloaded.
+  //
+  // INTERNAL IMPLEMENTATION - DO NOT USE IN A USER PROGRAM.
+  static void DeinitializeInstance();
 
   // Runs all tests in this UnitTest object and prints the result.
   // Returns 0 if successful, or 1 otherwise.
@@ -1388,6 +1393,25 @@ class GTEST_API_ UnitTest {
   TestEventListeners& listeners();
 
  private:
+  class Container {
+   public:
+    Container();
+
+    ~Container();
+
+    void Set(UnitTest *t);
+
+    UnitTest* Get();
+
+    void Clear();
+
+   private:
+    UnitTest *t_;
+  };
+
+  static Container singletonContainer_;
+
+
   // Registers and returns a global test environment.  When a test
   // program is run, all global test environments will be set-up in
   // the order they were registered.  After all tests in the program
@@ -1509,6 +1533,9 @@ GTEST_API_ void InitGoogleTest(int* argc, wchar_t** argv);
 // there is no argc/argv.
 GTEST_API_ void InitGoogleTest();
 
+// Unload all registered unit tests
+GTEST_API_ void UnloadGoogleTest();
+
 namespace internal {
 
 // Separate the error generating code from the code path to reduce the stack
@@ -1580,7 +1607,34 @@ class EqHelper {
                                  BiggestInt rhs) {
     return CmpHelperEQ(lhs_expression, rhs_expression, lhs, rhs);
   }
+};
 
+// This specialization is used when the first argument to ASSERT_EQ()
+// is a null pointer literal, like NULL, false, or 0.
+template <>
+class EqHelper<true> {
+ public:
+  // We define two overloaded versions of Compare().  The first
+  // version will be picked when the second argument to ASSERT_EQ() is
+  // NOT a pointer, e.g. ASSERT_EQ(0, AnIntFunction()) or
+  // EXPECT_EQ(false, a_bool).
+  template <typename T1, typename T2>
+  static AssertionResult Compare(
+      const char* lhs_expression,
+      const char* rhs_expression,
+      const T1& lhs,
+      const T2& rhs,
+      // The following line prevents this overload from being considered if T2
+      // is not a pointer type.  We need this because ASSERT_EQ(NULL, my_ptr)
+      // expands to Compare("", "", NULL, my_ptr), which requires a conversion
+      // to match the Secret* in the other overload, which would otherwise make
+      // this template match better.
+      typename EnableIf<!is_pointer<T2>::value>::type* = 0) {
+    return CmpHelperEQ(lhs_expression, rhs_expression, lhs, rhs);
+  }
+
+  // This version will be picked when the second argument to ASSERT_EQ() is a
+  // pointer, e.g. ASSERT_EQ(NULL, a_pointer).
   template <typename T>
   static AssertionResult Compare(
       const char* lhs_expression, const char* rhs_expression,
@@ -2479,7 +2533,8 @@ TestInfo* RegisterTest(const char* test_suite_name, const char* test_name,
 int RUN_ALL_TESTS() GTEST_MUST_USE_RESULT_;
 
 inline int RUN_ALL_TESTS() {
-  return ::testing::UnitTest::GetInstance()->Run();
+  int ret = ::testing::UnitTest::GetInstance()->Run();
+  return ret;
 }
 
 GTEST_DISABLE_MSC_WARNINGS_POP_()  //  4251
