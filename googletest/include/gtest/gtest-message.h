@@ -287,7 +287,7 @@ struct GTEST_API_ CustomMessageStream : std::stringstream
 
     ~CustomMessageStream()
     {
-		if (this->str().empty() || this->str().back() != '\n')
+		if (this->str().empty() || (*this->str().rbegin()) != '\n')
 			(*this) << '\n';
 
         ::testing::internal::ColoredPrintf(testing::internal::COLOR_GREEN, "[   NOTE   ] "); 
