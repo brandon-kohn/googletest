@@ -8,6 +8,7 @@
 # BUILD_SHARED_LIBS is a standard CMake variable, but we declare it here to
 # make it prominent in the GUI.
 option(BUILD_SHARED_LIBS "Build shared libraries (DLLs)." OFF)
+option(BUILD_EXPLICIT_STATIC_LIBS "In addition to the defaults, build static libraries with _static appended to the name." OFF)
 
 # When other libraries are using a shared version of runtime libraries,
 # Google Test also has to use one.
@@ -100,13 +101,23 @@ cxx_library(gtest_main "${cxx_strict}" src/gtest_main.cc)
 target_link_libraries(gtest_main gtest)
 set_target_properties (gtest PROPERTIES DEBUG_POSTFIX "d")
 set_target_properties (gtest_main PROPERTIES DEBUG_POSTFIX "d")
-
+if(BUILD_EXPLICIT_STATIC_LIBS)
+cxx_library(gtest_static "${cxx_strict}" src/gtest-all.cc)
+cxx_library(gtest_main_static "${cxx_strict}" src/gtest_main.cc)
+target_link_libraries(gtest_main_static gtest_static)
+set_target_properties (gtest_static PROPERTIES DEBUG_POSTFIX "d")
+set_target_properties (gtest_main_static PROPERTIES DEBUG_POSTFIX "d")
+endif()
 # If the CMake version supports it, attach header directory information
 # to the targets for when we are part of a parent build (ie being pulled
 # in via add_subdirectory() rather than being a standalone build).
 if (DEFINED CMAKE_VERSION AND NOT "${CMAKE_VERSION}" VERSION_LESS "2.8.11")
   target_include_directories(gtest      SYSTEM INTERFACE "${gtest_SOURCE_DIR}/include")
   target_include_directories(gtest_main SYSTEM INTERFACE "${gtest_SOURCE_DIR}/include")
+if(BUILD_EXPLICIT_STATIC_LIBS)
+  target_include_directories(gtest_static      SYSTEM INTERFACE "${gtest_SOURCE_DIR}/include")
+  target_include_directories(gtest_main_static SYSTEM INTERFACE "${gtest_SOURCE_DIR}/include")
+endif()
 endif()
 
 ########################################################################
@@ -120,6 +131,12 @@ if(INSTALL_GTEST)
   install(DIRECTORY "${gtest_SOURCE_DIR}/include/gtest"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
 
+if(BUILD_EXPLICIT_STATIC_LIBS)
+  install(TARGETS gtest_static gtest_main_static
+    RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+    ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+    LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+endif()
   # configure and install pkgconfig files
   configure_file(
     cmake/gtest.pc.in

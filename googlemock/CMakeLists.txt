@@ -8,6 +8,7 @@
 # BUILD_SHARED_LIBS is a standard CMake variable, but we declare it here to
 # make it prominent in the GUI.
 option(BUILD_SHARED_LIBS "Build shared libraries (DLLs)." OFF)
+option(BUILD_EXPLICIT_STATIC_LIBS "In addition to the defaults, build static libraries with _static appended to the name." OFF)
 
 option(gmock_build_tests "Build all of Google Mock's own tests." OFF)
 
@@ -99,15 +100,38 @@ cxx_library(gmock_main
             "${gtest_dir}/src/gtest-all.cc"
             src/gmock-all.cc
             src/gmock_main.cc)
+if(${BUILD_EXPLICIT_STATIC_LIBS)
+cxx_library(gmock_static
+            "${cxx_strict}"
+            "${gtest_dir}/src/gtest-all.cc"
+            src/gmock-all.cc)
+
+cxx_library(gmock_main_static
+            "${cxx_strict}"
+            "${gtest_dir}/src/gtest-all.cc"
+            src/gmock-all.cc
+            src/gmock_main.cc)
+endif()
 else()
   cxx_library(gmock "${cxx_strict}" src/gmock-all.cc)
   target_link_libraries(gmock gtest)
   cxx_library(gmock_main "${cxx_strict}" src/gmock_main.cc)
   target_link_libraries(gmock_main gmock)
+if(${BUILD_EXPLICIT_STATIC_LIBS)
+  cxx_library(gmock_static "${cxx_strict}" src/gmock-all.cc)
+  target_link_libraries(gmock_static gtest_static)
+  cxx_library(gmock_main_static "${cxx_strict}" src/gmock_main.cc)
+  target_link_libraries(gmock_main_static gmock_static)
+endif()
 endif()
             
 set_target_properties (gmock PROPERTIES DEBUG_POSTFIX "d")
 set_target_properties (gmock_main PROPERTIES DEBUG_POSTFIX "d")
+
+if(${BUILD_EXPLICIT_STATIC_LIBS)
+set_target_properties (gmock_static PROPERTIES DEBUG_POSTFIX "d")
+set_target_properties (gmock_main_static PROPERTIES DEBUG_POSTFIX "d")
+endif()
 
 # If the CMake version supports it, attach header directory information
 # to the targets for when we are part of a parent build (ie being pulled
@@ -115,6 +139,10 @@ set_target_properties (gmock_main PROPERTIES DEBUG_POSTFIX "d")
 if (DEFINED CMAKE_VERSION AND NOT "${CMAKE_VERSION}" VERSION_LESS "2.8.11")
   target_include_directories(gmock      SYSTEM INTERFACE "${gmock_SOURCE_DIR}/include")
   target_include_directories(gmock_main SYSTEM INTERFACE "${gmock_SOURCE_DIR}/include")
+if(${BUILD_EXPLICIT_STATIC_LIBS)
+  target_include_directories(gmock_static      SYSTEM INTERFACE "${gmock_SOURCE_DIR}/include")
+  target_include_directories(gmock_main_static SYSTEM INTERFACE "${gmock_SOURCE_DIR}/include")
+endif()
 endif()
 
 ########################################################################
@@ -127,6 +155,13 @@ if(INSTALL_GMOCK)
     ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}")
   install(DIRECTORY "${gmock_SOURCE_DIR}/include/gmock"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+
+if(${BUILD_EXPLICIT_STATIC_LIBS)
+  install(TARGETS gmock_static gmock_main_static
+    RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+    LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+    ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+endif()
 
   # configure and install pkgconfig files
   configure_file(
