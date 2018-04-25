@@ -102,13 +102,13 @@ cxx_library(gmock_main
             "${gtest_dir}/src/gtest-all.cc"
             src/gmock-all.cc
             src/gmock_main.cc)
-if(${BUILD_EXPLICIT_STATIC_LIBS)
-cxx_library(gmock_static
+if(BUILD_EXPLICIT_STATIC_LIBS)
+cxx_library_with_type(gmock_static STATIC
             "${cxx_strict}"
             "${gtest_dir}/src/gtest-all.cc"
             src/gmock-all.cc)
 
-cxx_library(gmock_main_static
+cxx_library_with_type(gmock_main_static STATIC
             "${cxx_strict}"
             "${gtest_dir}/src/gtest-all.cc"
             src/gmock-all.cc
@@ -119,10 +119,10 @@ else()
   target_link_libraries(gmock PUBLIC gtest)
   cxx_library(gmock_main "${cxx_strict}" src/gmock_main.cc)
   target_link_libraries(gmock_main PUBLIC gmock)
-if(${BUILD_EXPLICIT_STATIC_LIBS)
-  cxx_library(gmock_static "${cxx_strict}" src/gmock-all.cc)
+if(BUILD_EXPLICIT_STATIC_LIBS)
+  cxx_library_with_type(gmock_static "${cxx_strict}" src/gmock-all.cc)
   target_link_libraries(gmock_static PUBLIC gtest_static)
-  cxx_library(gmock_main_static "${cxx_strict}" src/gmock_main.cc)
+  cxx_library_with_type(gmock_main_static "${cxx_strict}" src/gmock_main.cc)
   target_link_libraries(gmock_main_static PUBLIC gmock_static)
 endif()
 endif()
@@ -130,7 +130,7 @@ endif()
 set_target_properties (gmock PROPERTIES DEBUG_POSTFIX "d")
 set_target_properties (gmock_main PROPERTIES DEBUG_POSTFIX "d")
 
-if(${BUILD_EXPLICIT_STATIC_LIBS)
+if(BUILD_EXPLICIT_STATIC_LIBS)
 set_target_properties (gmock_static PROPERTIES DEBUG_POSTFIX "d")
 set_target_properties (gmock_main_static PROPERTIES DEBUG_POSTFIX "d")
 endif()
@@ -141,7 +141,7 @@ endif()
 if (DEFINED CMAKE_VERSION AND NOT "${CMAKE_VERSION}" VERSION_LESS "2.8.11")
   target_include_directories(gmock      SYSTEM INTERFACE "${gmock_SOURCE_DIR}/include")
   target_include_directories(gmock_main SYSTEM INTERFACE "${gmock_SOURCE_DIR}/include")
-if(${BUILD_EXPLICIT_STATIC_LIBS)
+if(BUILD_EXPLICIT_STATIC_LIBS)
   target_include_directories(gmock_static      SYSTEM INTERFACE "${gmock_SOURCE_DIR}/include")
   target_include_directories(gmock_main_static SYSTEM INTERFACE "${gmock_SOURCE_DIR}/include")
 endif()
@@ -158,7 +158,7 @@ if(INSTALL_GMOCK)
   install(DIRECTORY "${gmock_SOURCE_DIR}/include/gmock"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
 
-if(${BUILD_EXPLICIT_STATIC_LIBS)
+if(BUILD_EXPLICIT_STATIC_LIBS)
   install(TARGETS gmock_static gmock_main_static
     RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
     LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
