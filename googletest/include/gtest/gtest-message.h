@@ -287,7 +287,7 @@ struct GTEST_API_ CustomMessageStream
 
     ~CustomMessageStream()
     {
-		if (mStream.str().empty() || (mStream.str().rbegin()) != '\n')
+		if (mStream.str().empty() || (*mStream.str().rbegin()) != '\n')
 			mStream << '\n';
 
         ::testing::internal::ColoredPrintf(testing::internal::COLOR_GREEN, "[   NOTE   ] "); 
@@ -298,7 +298,7 @@ struct GTEST_API_ CustomMessageStream
     std::ostream& operator <<(const T& value) { mStream << value; return mStream; }
 
     std::string str() const { return mStream.str(); }
-
+private:
     OutputColors::Color mColor;
     std::stringstream   mStream;
 };
