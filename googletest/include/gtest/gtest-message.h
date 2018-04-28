@@ -263,7 +263,7 @@ namespace OutputColors {
 	};
 }
 
-struct GTEST_API_ CustomMessageStream : std::stringstream
+struct GTEST_API_ CustomMessageStream
 {
     CustomMessageStream() 
 		: mColor(OutputColors::COLOR_YELLOW)
@@ -276,25 +276,31 @@ struct GTEST_API_ CustomMessageStream : std::stringstream
     CustomMessageStream(const std::string& s)
 		: mColor(OutputColors::COLOR_YELLOW)
 	{
-		(*this) << s;
+		mStream << s;
 	}
 
     CustomMessageStream(const std::string& s, OutputColors::Color messageColor)
 		: mColor(messageColor)
 	{
-		(*this) << s;
+		mStream << s;
 	}
 
     ~CustomMessageStream()
     {
-		if (this->str().empty() || (*this->str().rbegin()) != '\n')
-			(*this) << '\n';
+		if (mStream.str().empty() || (mStream.str().rbegin()) != '\n')
+			mStream << '\n';
 
         ::testing::internal::ColoredPrintf(testing::internal::COLOR_GREEN, "[   NOTE   ] "); 
-        ::testing::internal::ColoredPrintf((::testing::internal::GTestColor)mColor, this->str().c_str());
+        ::testing::internal::ColoredPrintf((::testing::internal::GTestColor)mColor, mStream.str().c_str());
     }
+    
+    template <typename T>
+    std::ostream& operator <<(const T& value) { mStream << value; return mStream; }
 
-	OutputColors::Color mColor;
+    std::string str() const { return mStream.str(); }
+
+    OutputColors::Color mColor;
+    std::stringstream   mStream;
 };
 
 #define GTEST_MESSAGE(...) ::testing::CustomMessageStream(__VA_ARGS__)
