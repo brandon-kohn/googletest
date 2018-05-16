@@ -4363,8 +4363,6 @@ void TestEventListeners::SuppressEventForwarding() {
 
 // class UnitTest
 
-UnitTest::Container UnitTest::singletonContainer_;
-
 // Gets the singleton UnitTest object.  The first time this method is
 // called, a UnitTest object is constructed and returned.  Consecutive
 // calls will return the same object.
@@ -4373,6 +4371,7 @@ UnitTest::Container UnitTest::singletonContainer_;
 // call this before main() starts, from which point on the return
 // value will never change.
 UnitTest* UnitTest::GetInstance() {
+  Container& singletonContainer_ = getSingletonContainer();
   if (singletonContainer_.Get() == NULL) {
     singletonContainer_.Set(new UnitTest);
   }
@@ -4381,6 +4380,7 @@ UnitTest* UnitTest::GetInstance() {
 }
 
 void UnitTest::DeinitializeInstance() {
+  Container& singletonContainer_ = getSingletonContainer();
   if (singletonContainer_.Get()) {
     singletonContainer_.Clear();
   }
@@ -4476,6 +4476,12 @@ TestCase* UnitTest::GetMutableTestCase(int i) {
 // inside Google Test.
 TestEventListeners& UnitTest::listeners() {
   return *impl()->listeners();
+}
+
+testing::UnitTest::Container& UnitTest::getSingletonContainer()
+{
+	static Container inst_;
+	return inst_;
 }
 
 // Registers and returns a global test environment.  When a test
