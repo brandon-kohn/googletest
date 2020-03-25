@@ -3013,7 +3013,7 @@ void TestSuite::Run() {
   for (int i = 0; i < total_test_count(); i++) {
     GetMutableTestInfo(i)->Run();
   }
-  elapsed_time_ = internal::GetTimeInMillis() - start;
+  elapsed_time_ = internal::GetTimeInMillis() - start_timestamp_;
 
   impl->os_stack_trace_getter()->UponLeavingGTest();
   internal::HandleExceptionsInMethodIfSupported(
@@ -3124,7 +3124,6 @@ static const char * TestPartResultTypeToString(TestPartResult::Type type) {
 
 namespace internal {
 namespace {
-enum class GTestColor { kDefault, kRed, kGreen, kYellow };
 }  // namespace
 
 // Prints a TestPartResult to an std::string.
@@ -3274,7 +3273,7 @@ GTEST_API_ void ColoredPrintf(GTestColor color, const char* fmt, ...) {
 #else
   static const bool in_color_mode =
       ShouldUseColor(posix::IsATTY(posix::FileNo(stdout)) != 0);
-  const bool use_color = in_color_mode && (color != GTestColor::kDefault);
+  const bool use_color = in_color_mode && (((GTestColor)color) != GTestColor::kDefault);
 #endif  // GTEST_OS_WINDOWS_MOBILE || GTEST_OS_ZOS
 
   if (!use_color) {

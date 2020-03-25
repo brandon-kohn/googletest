@@ -200,8 +200,8 @@ inline std::ostream& operator <<(std::ostream& os, const Message& sb) {
   return os << sb.GetString();
 }
 
+enum class GTestColor { kDefault, kRed, kGreen, kYellow };
 namespace internal {
-
 // Converts a streamable value to an std::string.  A NULL pointer is
 // converted to "(null)".  When the input value is a ::string,
 // ::std::string, ::wstring, or ::std::wstring object, each NUL
@@ -211,42 +211,26 @@ std::string StreamableToString(const T& streamable) {
   return (Message() << streamable).GetString();
 }
 
-enum GTestColor {
-    COLOR_DEFAULT,
-    COLOR_RED,
-    COLOR_GREEN,
-    COLOR_YELLOW
-};
-
 GTEST_API_ void ColoredPrintf(GTestColor color, const char* fmt, ...);
 }  // namespace internal
-
-namespace OutputColors {
-	enum Color {
-		COLOR_DEFAULT,
-		COLOR_RED,
-		COLOR_GREEN,
-		COLOR_YELLOW
-	};
-}
 
 struct GTEST_API_ CustomMessageStream
 {
     CustomMessageStream() 
-		: mColor(OutputColors::COLOR_YELLOW)
+		: mColor(GTestColor::kYellow)
 	{}
 
-	CustomMessageStream(OutputColors::Color messageColor)
+	CustomMessageStream(GTestColor messageColor)
 		: mColor(messageColor)
 	{}
 
     CustomMessageStream(const std::string& s)
-		: mColor(OutputColors::COLOR_YELLOW)
+		: mColor(GTestColor::kYellow)
 	{
 		mStream << s;
 	}
 
-    CustomMessageStream(const std::string& s, OutputColors::Color messageColor)
+    CustomMessageStream(const std::string& s, GTestColor messageColor)
 		: mColor(messageColor)
 	{
 		mStream << s;
@@ -257,17 +241,21 @@ struct GTEST_API_ CustomMessageStream
 		if (mStream.str().empty() || (*mStream.str().rbegin()) != '\n')
 			mStream << '\n';
 
-        ::testing::internal::ColoredPrintf(testing::internal::COLOR_GREEN, "[   NOTE   ] "); 
-        ::testing::internal::ColoredPrintf((::testing::internal::GTestColor)mColor, mStream.str().c_str());
+        ::testing::internal::ColoredPrintf(GTestColor::kGreen, "[   NOTE   ] "); 
+        ::testing::internal::ColoredPrintf(mColor, mStream.str().c_str());
     }
     
     template <typename T>
-    std::ostream& operator <<(const T& value) { mStream << value; return mStream; }
+    std::ostream& operator <<(const T& value) 
+    { 
+        mStream << value;
+        return mStream; 
+    }
 
     std::string str() const { return mStream.str(); }
 private:
-    OutputColors::Color mColor;
-    std::stringstream   mStream;
+    GTestColor        mColor;
+    std::stringstream mStream;
 };
 
 #define GTEST_MESSAGE(...) ::testing::CustomMessageStream(__VA_ARGS__)

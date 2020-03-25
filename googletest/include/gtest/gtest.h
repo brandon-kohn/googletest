@@ -1608,43 +1608,6 @@ class EqHelper {
   }
 };
 
-// This specialization is used when the first argument to ASSERT_EQ()
-// is a null pointer literal, like NULL, false, or 0.
-template <>
-class EqHelper<true> {
- public:
-  // We define two overloaded versions of Compare().  The first
-  // version will be picked when the second argument to ASSERT_EQ() is
-  // NOT a pointer, e.g. ASSERT_EQ(0, AnIntFunction()) or
-  // EXPECT_EQ(false, a_bool).
-  template <typename T1, typename T2>
-  static AssertionResult Compare(
-      const char* lhs_expression,
-      const char* rhs_expression,
-      const T1& lhs,
-      const T2& rhs,
-      // The following line prevents this overload from being considered if T2
-      // is not a pointer type.  We need this because ASSERT_EQ(NULL, my_ptr)
-      // expands to Compare("", "", NULL, my_ptr), which requires a conversion
-      // to match the Secret* in the other overload, which would otherwise make
-      // this template match better.
-      typename EnableIf<!is_pointer<T2>::value>::type* = 0) {
-    return CmpHelperEQ(lhs_expression, rhs_expression, lhs, rhs);
-  }
-
-  // This version will be picked when the second argument to ASSERT_EQ() is a
-  // pointer, e.g. ASSERT_EQ(NULL, a_pointer).
-  template <typename T>
-  static AssertionResult Compare(
-      const char* lhs_expression, const char* rhs_expression,
-      // Handle cases where '0' is used as a null pointer literal.
-      std::nullptr_t /* lhs */, T* rhs) {
-    // We already know that 'lhs' is a null pointer.
-    return CmpHelperEQ(lhs_expression, rhs_expression, static_cast<T*>(nullptr),
-                       rhs);
-  }
-};
-
 // Separate the error generating code from the code path to reduce the stack
 // frame size of CmpHelperOP. This helps reduce the overhead of some sanitizers
 // when calling EXPECT_OP in a tight loop.
